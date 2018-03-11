@@ -1,0 +1,5 @@
+target
+.idea
+gold-price-collector.iml
+
+/dependency-reduced-pom.xml
