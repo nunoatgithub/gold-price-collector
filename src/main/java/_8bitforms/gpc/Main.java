@@ -66,10 +66,8 @@ public class Main {
             return result;
 
         } finally {
-            try {
+            if (response != null) {
                 response.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
     }
