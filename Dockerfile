@@ -4,7 +4,7 @@ USER root
 
 WORKDIR /home/root
 
-COPY gold-price-collector-*.jar gold-price-collector.jar
+COPY target/gold-price-collector-*.jar gold-price-collector.jar
 
 RUN mkdir wrkdir
 
