@@ -8,8 +8,6 @@ COPY gold-price-collector-*.jar gold-price-collector.jar
 
 RUN mkdir wrkdir
 
-COPY upgrade-to-latest.sh /home/root/wrkdir/upgrade-to-latest.sh
-
 VOLUME /home/root/wrkdir
 
 ENV url_password XXX
