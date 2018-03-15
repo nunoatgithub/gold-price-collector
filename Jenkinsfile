@@ -1,14 +1,21 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3-alpine'
-            args '-v $HOME/.m2:/root/.m2'
-        }
+    agent any
+    tools {
+        maven 'Maven 3.5.3'
     }
     stages {
-        stage('Build') {
+        stage ('Initialize') {
             steps {
-                sh 'mvn -X clean package'
+                sh '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${M2_HOME}"
+                '''
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                echo 'This is a minimal pipeline.'
             }
         }
     }
