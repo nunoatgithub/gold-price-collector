@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ('Build and publish container') {
             steps {
-                withCredentials([usernamePassword(credentialsId: '382374a6-e94c-4872-aac4-c6bfafb93a8a', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USER')]) {
+                withCredentials([usernamePassword(credentialsId: '64b31b93-70ed-40fc-bb16-00a225b585a4', passwordVariable: 'DOCKERHUB_PASSWORD', usernameVariable: 'DOCKERHUB_USER')]) {
                     sh "mvn clean install -Ddockerhub.user=$DOCKERHUB_USER -Ddockerhub.password=$DOCKERHUB_PASSWORD"
                 }
             }
