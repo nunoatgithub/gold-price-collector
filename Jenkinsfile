@@ -13,4 +13,11 @@ pipeline {
             }
         }
     }
+    post {
+        stage ('Clean up Docker artefacts') {
+            steps {
+                sh 'docker system prune -f'
+            }
+        }
+    }
 }
