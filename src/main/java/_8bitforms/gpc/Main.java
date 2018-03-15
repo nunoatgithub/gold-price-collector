@@ -23,7 +23,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
+        StrongTextEncryptor textEncryptor = new StrongT extEncryptor();
         textEncryptor.setPassword(args[0]);
         URL = textEncryptor.decrypt(URL_ENCRYPTED);
 
