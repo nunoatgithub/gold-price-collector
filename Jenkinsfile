@@ -16,6 +16,11 @@ pipeline {
         always {
             sh 'docker system prune -f'
         }
+        success {
+                mail to: '8bitforms@gmail.com',
+                     subject: "Successfull build: ${currentBuild.fullDisplayName}",
+                     body: "Click the link for details ${env.BUILD_URL}"
+        }
         failure {
                 mail to: '8bitforms@gmail.com',
                      subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
