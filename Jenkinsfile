@@ -21,6 +21,11 @@ pipeline {
                      subject: "Successfull build: ${currentBuild.fullDisplayName}",
                      body: "Click the link for details ${env.BUILD_URL}"
         }
+        unstable {
+                mail to: '8bitforms@gmail.com',
+                     subject: "Unstable Pipeline: ${currentBuild.fullDisplayName}",
+                     body: "Click the link for details with ${env.BUILD_URL}"
+        }
         failure {
                 mail to: '8bitforms@gmail.com',
                      subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
