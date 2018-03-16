@@ -14,7 +14,12 @@ pipeline {
     }
     post {
         always {
-            sh 'docker system prune -af'
+            sh 'docker system prune -f'
         }
+        failure {
+                mail to: '8bitforms@gmail.com',
+                     subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+                     body: "Something is wrong with ${env.BUILD_URL}"
+            }
     }
 }
