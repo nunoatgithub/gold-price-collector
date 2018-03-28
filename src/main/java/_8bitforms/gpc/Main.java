@@ -8,13 +8,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jasypt.util.text.StrongTextEncryptor;
 
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Date;
 
 public class Main {
 
@@ -32,7 +28,7 @@ public class Main {
                      new PrintWriter(new FileWriter(new File("wrkdir/live_gold_price"), true))) {
 
             while(true) {
-                String[] priceAndTimestamp = getPrice();
+                String[] priceAndTimestamp = getPriceAndTimestamp();
                 printWriter.println(priceAndTimestamp[1] + ":" + priceAndTimestamp[0]);
                 printWriter.flush();
                 try {
@@ -44,7 +40,7 @@ public class Main {
         }
     }
 
-    private static String[] getPrice() throws IOException {
+    private static String[] getPriceAndTimestamp() throws IOException {
 
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(URL);
