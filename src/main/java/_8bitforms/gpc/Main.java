@@ -1,69 +1,24 @@
 package _8bitforms.gpc;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
-import org.jasypt.util.text.StrongTextEncryptor;
-
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class Main {
 
-    private static final String URL_ENCRYPTED = "NWtz5ZoMl6tB3xAaeHkOeaE9IwjqkNak0/tMoydsEa1zjhoCExmaUj5xQaVbXqxblJMQC0C0ONzX27FOGsxO4q9B3nRAPKeV/8lJxL795Vh2jF64D4ZUNRhbSKtvtiMWeQqQ0utyxlCwMJIDT9GDcS8tOhK2IuWmgPztAe2Q4YrQ8kSDZKOOGQ==";
-    private static String URL = null;
+    public static void main(String[] args) throws Exception {
 
-    public static void main(String[] args) throws IOException {
+//        EventSource eventSource = new HistoryFileEventSource("history")
+//                .withBlockingEventStore(new LocalFileEventStore());
 
-        StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
-        textEncryptor.setPassword(args[0]);
-        URL = textEncryptor.decrypt(URL_ENCRYPTED);
+        EventSource eventSource = new RemoteEventSource(args[0])
+                .withBlockingEventStore(new LocalFileEventStore());
 
-        Files.createDirectories(Paths.get("wrkdir"));
-        try (PrintWriter printWriter =
-                     new PrintWriter(new FileWriter(new File("wrkdir/live_gold_price"), true))) {
-
-            while(true) {
-                String[] priceAndTimestamp = getPriceAndTimestamp();
-                printWriter.println(priceAndTimestamp[1] + ":" + priceAndTimestamp[0]);
-                printWriter.flush();
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        if (args.length > 1) {
+            try {
+                eventSource.setOptionalEventStore(new IgniteEventStore(args[1]));
+            } catch (EventStoreException e) {
+                System.out.println("Unable to start Ignite EventStore. Will proceed without sending events there. Caused by: \n");
+                e.printStackTrace();
             }
         }
-    }
 
-    private static String[] getPriceAndTimestamp() throws IOException {
-
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpGet = new HttpGet(URL);
-        CloseableHttpResponse response = null;
-
-        String[] result = new String[2];
-        try {
-            response = httpclient.execute(httpGet);
-            HttpEntity entity = response.getEntity();
-            String responseBody = EntityUtils.toString(entity);
-            String contentTail = responseBody.substring(responseBody.lastIndexOf("price"));
-            //e.g. price":42623.370045,"timestamp":1520518607991}}
-            String[] tokens = contentTail.split(":");
-            // [0] = price", [1] = 42623.370045,"timestamp", [2] = 1520518607991}}
-            Double price = Double.valueOf(tokens[1].split(",")[0]); // 42623.370045
-            result[0] = String.valueOf(price / 32.1507); // price in troy onces
-            result[1] = tokens[2].split("}")[0]; // 1520518607991
-            return result;
-
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-        }
+        eventSource.startConsuming();
     }
 }
