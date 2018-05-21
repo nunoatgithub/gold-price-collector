@@ -49,7 +49,6 @@ public class Main {
         String[] result = new String[2];
         try {
             response = httpclient.execute(httpGet);
-            System.out.println(response.getStatusLine());
             HttpEntity entity = response.getEntity();
             String responseBody = EntityUtils.toString(entity);
             String contentTail = responseBody.substring(responseBody.lastIndexOf("price"));
