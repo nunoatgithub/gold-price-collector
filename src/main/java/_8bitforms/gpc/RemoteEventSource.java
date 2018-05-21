@@ -14,6 +14,7 @@ public class RemoteEventSource extends AbstractEventSource {
 
     private static final String URL_ENCRYPTED = "NWtz5ZoMl6tB3xAaeHkOeaE9IwjqkNak0/tMoydsEa1zjhoCExmaUj5xQaVbXqxblJMQC0C0ONzX27FOGsxO4q9B3nRAPKeV/8lJxL795Vh2jF64D4ZUNRhbSKtvtiMWeQqQ0utyxlCwMJIDT9GDcS8tOhK2IuWmgPztAe2Q4YrQ8kSDZKOOGQ==";
     private String url = null;
+    private int count = 0;
 
     public RemoteEventSource(String urlDecryptionPassword) {
 
@@ -32,6 +33,10 @@ public class RemoteEventSource extends AbstractEventSource {
                 String price = priceAndTimestamp[0];
 
                 publishToEventStores(timestamp, price);
+
+                if (count % 100 == 0) {
+                    System.out.println(++count + " published");
+                }
 
                 try {
                     Thread.sleep(10000);
