@@ -5,7 +5,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
 //        EventSource eventSource = new HistoryFileEventSource("history")
-//                .withBlockingEventStore(new LocalFileEventStore());
+//                .withBlockingEventStore((timestamp, price) -> {});
 
         EventSource eventSource = new RemoteEventSource(args[0])
                 .withBlockingEventStore(new LocalFileEventStore());

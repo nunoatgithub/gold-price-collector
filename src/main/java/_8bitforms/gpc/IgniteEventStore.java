@@ -11,7 +11,7 @@ public class IgniteEventStore implements EventStore {
     public IgniteEventStore(String clusterIPAddress) throws EventStoreException {
 
         try {
-            Class.forName("org.apache.ignite.IgniteJdbcDriver");
+            Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
 
             Connection connection = DriverManager.getConnection(
                     "jdbc:ignite:thin://" + clusterIPAddress + "/");

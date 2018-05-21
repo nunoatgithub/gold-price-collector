@@ -12,6 +12,6 @@ VOLUME /home/root/wrkdir
 
 ENV url_password XXX
 
-ENV event_store_ip 127.0.0.1
+ENV event_store_address 127.0.0.1
 
-CMD java -jar gold-price-collector.jar ${url_password} ${event_store_ip}
+CMD java -jar gold-price-collector.jar ${url_password} ${event_store_address}
