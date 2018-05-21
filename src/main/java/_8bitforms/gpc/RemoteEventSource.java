@@ -34,8 +34,8 @@ public class RemoteEventSource extends AbstractEventSource {
 
                 publishToEventStores(timestamp, price);
 
-                if (count % 100 == 0) {
-                    System.out.println(++count + " published");
+                if (++count % 100 == 0) {
+                    System.out.println(count + " published");
                 }
 
                 try {
