@@ -1,22 +1,38 @@
 package _8bitforms.gpc;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteCache;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
+import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
+import org.apache.ignite.spi.discovery.tcp.ipfinder.s3.TcpDiscoveryS3IpFinder;
 
 public class IgniteEventStore implements EventStore {
 
-    private PreparedStatement stmt;
+    private IgniteCache goldPrices;
+    private static final SqlFieldsQuery SQL_FIELDS_QUERY =
+            new SqlFieldsQuery("INSERT INTO GOLD_PRICES (event_time, price) VALUES (?, ?)");
 
-    public IgniteEventStore(String clusterIPAddress) throws EventStoreException {
+    public IgniteEventStore() throws EventStoreException {
 
-        try {
-            Class.forName("org.apache.ignite.IgniteJdbcThinDriver");
+        Ignition.setClientMode(true);
 
-            Connection connection = DriverManager.getConnection(
-                    "jdbc:ignite:thin://" + clusterIPAddress + "/");
+        try{
+            TcpDiscoverySpi spi = new TcpDiscoverySpi();
 
-            this.stmt = connection.prepareStatement("INSERT INTO gold_prices (event_time, price) VALUES (?, ?)");
+            TcpDiscoveryS3IpFinder ipFinder = new TcpDiscoveryS3IpFinder();
+            ipFinder.setAwsCredentialsProvider(new InstanceProfileCredentialsProvider(false));
+            ipFinder.setBucketName("8bitforms-ignite");
+            ipFinder.setBucketEndpoint("s3.us-east-1.amazonaws.com");
+
+            spi.setIpFinder(ipFinder);
+            IgniteConfiguration cfg = new IgniteConfiguration();
+            cfg.setDiscoverySpi(spi);
+
+            Ignite ignite = Ignition.start(cfg);
+            goldPrices = ignite.cache("GOLD_PRICES");
 
         }catch(Exception e) {
             throw new EventStoreException(e);
@@ -26,9 +42,9 @@ public class IgniteEventStore implements EventStore {
     public void send(String timestamp, String price) throws EventStoreException {
 
         try {
-            this.stmt.setLong(1, Long.parseLong(timestamp));
-            this.stmt.setDouble(2, Double.parseDouble(price));
-            this.stmt.executeUpdate();
+
+            goldPrices.query(SQL_FIELDS_QUERY.setArgs(Long.parseLong(timestamp), Double.parseDouble(price))).getAll();
+
         }catch (Exception e) {
             throw new EventStoreException(e);
         }
