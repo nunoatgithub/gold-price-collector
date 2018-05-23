@@ -5,7 +5,6 @@ USER root
 WORKDIR /home/root
 
 COPY target/gold-price-collector-*.jar gold-price-collector.jar
-COPY history history
 
 RUN mkdir wrkdir
 
