@@ -6,11 +6,11 @@ public class Main {
 
         long start = System.currentTimeMillis();
 
-        EventSource eventSource = new HistoryFileEventSource("history")
-                .withBlockingEventStore((timestamp, price) -> {});
+//        EventSource eventSource = new HistoryFileEventSource("history")
+//                .withBlockingEventStore((timestamp, price) -> {});
 
-//        EventSource eventSource = new RemoteEventSource(args[0])
-//                .withBlockingEventStore(new LocalFileEventStore());
+        EventSource eventSource = new RemoteEventSource(args[0])
+                .withBlockingEventStore(new LocalFileEventStore());
 
         try {
             eventSource.setOptionalEventStore(new IgniteEventStore());
