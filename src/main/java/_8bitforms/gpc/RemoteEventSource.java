@@ -16,16 +16,15 @@ import java.util.concurrent.CountDownLatch;
 public class RemoteEventSource extends AbstractEventSource {
 
     private static final String URL_ENCRYPTED = "NWtz5ZoMl6tB3xAaeHkOeaE9IwjqkNak0/tMoydsEa1zjhoCExmaUj5xQaVbXqxblJMQC0C0ONzX27FOGsxO4q9B3nRAPKeV/8lJxL795Vh2jF64D4ZUNRhbSKtvtiMWeQqQ0utyxlCwMJIDT9GDcS8tOhK2IuWmgPztAe2Q4YrQ8kSDZKOOGQ==";
-    private final CountDownLatch countDownLatch;
-    private int count = 0;
-    private ConsumingThread executingThread;
+    private CountDownLatch countDownLatch;
+    private ConsumingThread consumingThread;
     private int upTimeInMinutes;
 
     public RemoteEventSource(String urlDecryptionPassword, int upTimeInMinutes) {
 
         StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
         textEncryptor.setPassword(urlDecryptionPassword);
-        this.executingThread = new ConsumingThread(textEncryptor.decrypt(URL_ENCRYPTED));
+        this.consumingThread = new ConsumingThread(textEncryptor.decrypt(URL_ENCRYPTED));
         this.countDownLatch = new CountDownLatch(1);
         this.upTimeInMinutes = upTimeInMinutes;
     }
@@ -35,14 +34,14 @@ public class RemoteEventSource extends AbstractEventSource {
         new Timer(true).schedule(new TimerTask() {
             @Override
             public void run() {
-                executingThread.exit();
+                consumingThread.exit();
                 shutdownEventStores();
                 onExit.run();
                 countDownLatch.countDown();
             }
         }, upTimeInMinutes*60*1000L);
 
-        executingThread.start();
+        consumingThread.start();
 
         try {
             this.countDownLatch.await();
@@ -69,7 +68,7 @@ public class RemoteEventSource extends AbstractEventSource {
 
         @Override
         public void run() {
-
+            int count = 0;
             while (!stop) {
                 try {
 
