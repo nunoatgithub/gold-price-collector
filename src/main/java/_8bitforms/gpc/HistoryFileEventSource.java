@@ -23,9 +23,9 @@ public class HistoryFileEventSource extends AbstractEventSource {
         this.bfr = new BufferedReader(new FileReader(new File(filePath)));
     }
 
-    public void startConsuming() {
+    public void startConsuming(Runnable onExit) {
+        long start = System.currentTimeMillis();
         try {
-
             String line = null;
             while ((line = bfr.readLine()) != null) {
                 String[] timestampAndPrice = line.split(":");
@@ -36,6 +36,11 @@ public class HistoryFileEventSource extends AbstractEventSource {
             }
         }catch(Exception e) {
             e.printStackTrace();
+        } finally {
+            long end = System.currentTimeMillis();
+            System.out.println((end-start)/1000 + " secs spent!");
+            shutdownEventStores();
+            onExit.run();
         }
     }
 }

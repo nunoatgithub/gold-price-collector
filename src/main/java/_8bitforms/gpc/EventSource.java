@@ -1,10 +1,12 @@
 package _8bitforms.gpc;
 
+import java.time.LocalDate;
+
 public interface EventSource {
 
-    EventSource withBlockingEventStore(EventStore eventStore);
+    EventSource withPrimaryEventStore(EventStore eventStore);
 
-    void setOptionalEventStore(EventStore eventStore);
+    EventSource withSecondaryEventStore(EventStore eventStore);
 
-    void startConsuming();
+    void startConsuming(Runnable onExit);
 }

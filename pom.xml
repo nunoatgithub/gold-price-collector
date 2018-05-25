@@ -16,7 +16,7 @@
             </activation>
             <properties>
                 <docker.image>gold-price-collector</docker.image>
-                <dockerhub.image>8bitforms/gold-price-collector:next</dockerhub.image>
+                <dockerhub.image>8bitforms/gold-price-collector:latest</dockerhub.image>
             </properties>
         </profile>
         <profile>

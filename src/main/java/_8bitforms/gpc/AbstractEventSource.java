@@ -2,30 +2,47 @@ package _8bitforms.gpc;
 
 public abstract class AbstractEventSource implements EventSource {
 
-    EventStore blockingEventStore;
-    EventStore optionalEventStore;
+    private EventStore primaryEventStore;
+    private EventStore secondaryEventStore;
 
     @Override
-    public EventSource withBlockingEventStore(EventStore eventStore) {
-        blockingEventStore = eventStore;
+    public EventSource withPrimaryEventStore(EventStore eventStore) {
+        primaryEventStore = eventStore;
         return this;
     }
 
     @Override
-    public void setOptionalEventStore(EventStore eventStore) {
-        optionalEventStore = eventStore;
+    public EventSource withSecondaryEventStore(EventStore eventStore) {
+        secondaryEventStore = eventStore;
+        return this;
     }
 
     void publishToEventStores(String timestamp, String price) throws EventStoreException {
 
-        blockingEventStore.send(timestamp, price);
-        if (optionalEventStore != null) {
+        primaryEventStore.send(timestamp, price);
+        if (secondaryEventStore != null) {
             try {
-                optionalEventStore.send(timestamp, price);
+                secondaryEventStore.send(timestamp, price);
             } catch (EventStoreException e) {
                 e.printStackTrace();
             }
         }
     }
 
+    void shutdownEventStores() {
+
+        try {
+            primaryEventStore.shutdown();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (secondaryEventStore != null) {
+            try {
+                secondaryEventStore.shutdown();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

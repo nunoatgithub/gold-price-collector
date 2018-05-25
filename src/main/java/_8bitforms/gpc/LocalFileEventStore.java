@@ -29,4 +29,8 @@ public class LocalFileEventStore implements EventStore {
             throw new EventStoreException(e);
         }
     }
+
+    public void shutdown() {
+        printWriter.close();
+    }
 }

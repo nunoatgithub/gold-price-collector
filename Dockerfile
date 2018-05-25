@@ -11,5 +11,7 @@ RUN mkdir wrkdir
 VOLUME /home/root/wrkdir
 
 ENV url_password XXX
+ENV environment AWS
+ENV uptime 770
 
-CMD java -jar gold-price-collector.jar ${url_password}
+CMD java -Denvironment=${environment} -jar gold-price-collector.jar ${url_password} ${uptime}
