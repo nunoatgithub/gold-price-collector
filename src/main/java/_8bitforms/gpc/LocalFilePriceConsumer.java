@@ -6,27 +6,27 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class LocalFileEventStore implements EventStore {
+public class LocalFilePriceConsumer implements PriceConsumer {
 
     private PrintWriter printWriter;
 
-    public LocalFileEventStore() throws EventStoreException {
+    public LocalFilePriceConsumer(String priceName) throws PriceConsumerException {
         try {
-            printWriter =
-                    new PrintWriter(new FileWriter(new File("wrkdir/live_gold_price"), true));
+            printWriter = new PrintWriter(new FileWriter(new File("wrkdir/"+priceName), true));
             Files.createDirectories(Paths.get("wrkdir"));
         }catch (Exception e) {
-            throw new EventStoreException(e);
+            throw new PriceConsumerException(e);
         }
     }
 
-    public void send(String timestamp, String price) throws EventStoreException {
+    @Override
+    public void consume(String timestamp, String price) throws PriceConsumerException {
 
         try {
             printWriter.println(timestamp + ":" + price);
             printWriter.flush();
         } catch(Exception e) {
-            throw new EventStoreException(e);
+            throw new PriceConsumerException(e);
         }
     }
 

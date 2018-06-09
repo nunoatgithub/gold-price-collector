@@ -1,5 +1,6 @@
 package _8bitforms.gpc;
 
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -13,14 +14,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
-public class RemoteEventSource extends AbstractEventSource {
+public class GoldPricePublisher extends AbstractPricePublisher {
 
     private static final String URL_ENCRYPTED = "NWtz5ZoMl6tB3xAaeHkOeaE9IwjqkNak0/tMoydsEa1zjhoCExmaUj5xQaVbXqxblJMQC0C0ONzX27FOGsxO4q9B3nRAPKeV/8lJxL795Vh2jF64D4ZUNRhbSKtvtiMWeQqQ0utyxlCwMJIDT9GDcS8tOhK2IuWmgPztAe2Q4YrQ8kSDZKOOGQ==";
     private CountDownLatch countDownLatch;
     private ConsumingThread consumingThread;
     private int upTimeInMinutes;
 
-    public RemoteEventSource(String urlDecryptionPassword, int upTimeInMinutes) {
+    public GoldPricePublisher(String urlDecryptionPassword, int upTimeInMinutes) {
 
         StrongTextEncryptor textEncryptor = new StrongTextEncryptor();
         textEncryptor.setPassword(urlDecryptionPassword);
@@ -29,14 +30,14 @@ public class RemoteEventSource extends AbstractEventSource {
         this.upTimeInMinutes = upTimeInMinutes;
     }
 
-    public void startConsuming(Runnable onExit) {
+    @Override
+    public void startPublishing() {
 
         new Timer(true).schedule(new TimerTask() {
             @Override
             public void run() {
                 consumingThread.exit();
-                shutdownEventStores();
-                onExit.run();
+                shutdownConsumers();
                 countDownLatch.countDown();
             }
         }, upTimeInMinutes*60*1000L);
@@ -76,7 +77,7 @@ public class RemoteEventSource extends AbstractEventSource {
                     String timestamp = priceAndTimestamp[1];
                     String price = priceAndTimestamp[0];
 
-                    RemoteEventSource.this.publishToEventStores(timestamp, price);
+                    publishToConsumers(timestamp, price);
 
                     if (++count % 10 == 0) {
                         System.out.println(count + " published");

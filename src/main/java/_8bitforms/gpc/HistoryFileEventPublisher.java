@@ -14,16 +14,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class HistoryFileEventSource extends AbstractEventSource {
+public class HistoryFileEventPublisher extends AbstractPricePublisher {
 
     private BufferedReader bfr;
 
-    public HistoryFileEventSource(String filePath) throws IOException {
+    public HistoryFileEventPublisher(String filePath) throws IOException {
 
         this.bfr = new BufferedReader(new FileReader(new File(filePath)));
     }
 
-    public void startConsuming(Runnable onExit) {
+    @Override
+    public void startPublishing() {
         long start = System.currentTimeMillis();
         try {
             String line = null;
@@ -32,15 +33,14 @@ public class HistoryFileEventSource extends AbstractEventSource {
                 String timestamp = timestampAndPrice[0];
                 String price = timestampAndPrice[1];
 
-                publishToEventStores(timestamp, price);
+                publishToConsumers(timestamp, price);
             }
         }catch(Exception e) {
             e.printStackTrace();
         } finally {
             long end = System.currentTimeMillis();
             System.out.println((end-start)/1000 + " secs spent!");
-            shutdownEventStores();
-            onExit.run();
+            shutdownConsumers();
         }
     }
 }
