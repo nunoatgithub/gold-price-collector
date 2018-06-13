@@ -23,6 +23,7 @@ public class IgnitePriceConsumer implements PriceConsumer {
         initThread = new Thread(() -> {
             try {
                 TcpDiscoverySpi spi = new TcpDiscoverySpi();
+                spi.setReconnectDelay(60000); // one minute
 
                 TcpDiscoveryS3IpFinder ipFinder = new TcpDiscoveryS3IpFinder();
                 ipFinder.setAwsCredentialsProvider(new InstanceProfileCredentialsProvider(false));
