@@ -14,11 +14,12 @@ public class GoldPriceCollector {
 //                .withPrimaryEventStore((timestamp, price) -> {});
 
         LocalFilePriceConsumer localFilePriceConsumer = new LocalFilePriceConsumer("gold_price");
-        IgnitePriceConsumer ignitePriceConsumer = new IgnitePriceConsumer("gold_price");
+//        IgnitePriceConsumer ignitePriceConsumer = new IgnitePriceConsumer("gold_price");
 
         PricePublisher pricePublisher = new GoldPricePublisher(args[0], Integer.parseInt(args[1]))
                 .withPrimaryConsumer(localFilePriceConsumer)
-                .withSecondaryConsumer(ignitePriceConsumer);
+//                .withSecondaryConsumer(ignitePriceConsumer)
+                ;
 
         pricePublisher.startPublishing();
 
